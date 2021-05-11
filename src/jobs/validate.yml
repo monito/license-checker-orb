@@ -19,6 +19,7 @@ parameters:
     description: The package manager to use to install the node modules
   forbidden:
     type: string
+    default: ""
     description: A semi colon separated list of forbidden licenses.
 
 executor:
