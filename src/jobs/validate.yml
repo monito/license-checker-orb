@@ -37,23 +37,25 @@ executor:
   name: default
   tag: << parameters.node-version >>
 
-working_directory: << parameters.app-dir >>
-
 steps:
   - install
   - checkout
   - node/install-packages:
       pkg-manager: << parameters.pkg-manager >>
+      app-dir: << parameters.app-dir >>
   - run:
       name: Production License Check
       command: npx license-checker --production --summary --failOn << parameters.forbidden >>
+      working_directory: << parameters.app-dir >>
   - run:
       title: Production license summary
       command: npx license-checker --production --summary
+      working_directory: << parameters.app-dir >>
       when: on_fail
   - run:
       title: Build production license report
       command: npx license-checker --production --csv > /tmp/license-checker-report.csv
+      working_directory: << parameters.app-dir >>
       when: always
   - store_artifacts:
       path: /tmp/license-checker-report.csv
