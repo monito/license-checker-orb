@@ -8,7 +8,7 @@ parameters:
     description: The location of the package.json and associated node_modules
   options:
     type: string
-    default: --production --summary
+    default: --production --summary --excludePrivatePackages
     description: A list of options as per the license-checker CLI documentation
   title:
     type: string
