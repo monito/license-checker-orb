@@ -4,4 +4,4 @@ description: >
 steps:
   - run:
       name: Install license checker
-      command: npm install -g license-checker
+      command: yarn global add license-checker
