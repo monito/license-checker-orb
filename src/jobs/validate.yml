@@ -45,7 +45,7 @@ steps:
       app-dir: << parameters.app-dir >>
   - run:
       name: Production License Check
-      command: npx license-checker --production --summary --failOn << parameters.forbidden >>
+      command: npx license-checker --production --summary --failOn "<< parameters.forbidden >>"
       working_directory: << parameters.app-dir >>
   - run:
       title: Production license summary
