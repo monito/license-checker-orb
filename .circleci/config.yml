@@ -90,9 +90,12 @@ workflows:
       - orb-tools/dev-promote-prod-from-commit-subject:
           orb-name: monito/license-checker
           context: orb-publishing
-          add-pr-comment: false
+          add-pr-comment: true
+          bot-token-variable: GITHUB_TOKEN
+          bot-user: Tech Monito
           fail-if-semver-not-indicated: true
-          publish-version-tag: false
+          publish-version-tag: true
+          ssh-fingerprints: "7b:05:8f:d1:4c:18:95:b8:a5:3a:15:ed:29:9c:73:c2"
           requires: *integration-tests
           filters:
             branches:
