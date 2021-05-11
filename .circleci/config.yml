@@ -20,8 +20,8 @@ parameters:
 
 integration-tests:
   &integration-tests [
-    integration-test-default,
-    integration-test-override,
+    integration-test-jobs-default,
+    integration-test-jobs-override,
     integration-test-commands,
   ]
 
@@ -70,16 +70,16 @@ workflows:
   integration-test_deploy:
     when: << pipeline.parameters.run-integration-tests >>
     jobs:
-      # - license-checker/validate:
-      #     name: integration-test-jobs-default
-      #     app-dir: test-samples
-      # - license-checker/validate:
-      #     name: integration-test-jobs-override
-      #     node-version: 14.16.0
-      #     pkg-manager: yarn
-      #     forbidden: GPL;LGPL
-      #     app-dir: test-samples
-      # - integration-test-commands
+      - license-checker/validate:
+          name: integration-test-jobs-default
+          app-dir: test-samples
+      - license-checker/validate:
+          name: integration-test-jobs-override
+          node-version: 14.16.0
+          pkg-manager: yarn
+          forbidden: GPL;LGPL
+          app-dir: test-samples
+      - integration-test-commands
 
       # Publish a semver version of the orb. relies on
       # the commit subject containing the text "[semver:patch|minor|major|skip]"
