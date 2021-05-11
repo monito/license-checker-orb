@@ -77,7 +77,7 @@ workflows:
           name: integration-test-jobs-override
           node-version: 14.16.0
           pkg-manager: yarn
-          forbidden: GPL;LGPL
+          forbidden: GPL;LGPL;Forbidden license
           app-dir: test-samples
       - integration-test-commands
 
