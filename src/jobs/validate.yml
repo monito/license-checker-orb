@@ -1,0 +1,61 @@
+description: >
+  Drop-in job to validate your licenses used in production are not forbidden
+
+parameters:
+  app-dir:
+    type: string
+    default: .
+    description: The location of the package.json and associated node_modules
+  node-version:
+    type: string
+    default: 14.16.1
+    description: >
+      A full node version tag must be specified. Example: 14.16.1
+      For a full list of releases, see the following: https://nodejs.org/en/download/releases
+  pkg-manager:
+    type: enum
+    enum: [npm, yarn]
+    default: yarn
+    description: The package manager to use to install the node modules
+  forbidden:
+    type: string
+    default: GPL;LGPL;CC-BY;Berkeley;AGPL;MPL;EPL;CDDL;CPL
+    description: >
+      A semi colon separated list of forbidden licenses.
+      By default, the following licenses are forbidden:
+        GNU General Public License (GPL)
+        Lesser General Public License (LGPL)
+        Creative Commons Share-Alike License (CC-BY)
+        Berkeley DB License
+        Affero General Public License (AGPL)
+        Mozilla Public License (MPL)
+        Eclipse Public License (EPL)
+        Common Development and Distribution License (CDDL)
+        Common Public License (CPL)
+
+executor:
+  name: default
+  tag: << parameters.node-version >>
+
+steps:
+  - install
+  - checkout
+  - node/install-packages:
+      pkg-manager: << parameters.pkg-manager >>
+      app-dir: << parameters.app-dir >>
+  - run:
+      command: cd << parameters.app-dir >>
+  - run:
+      name: Production License Check
+      command: npx license-checker --production --summary --failOn << parameters.forbidden >>
+  - run:
+      title: Production license summary
+      command: npx license-checker --production --summary
+      when: on_fail
+  - run:
+      title: Build production license report
+      command: npx license-checker --production --csv > /tmp/license-checker-report.csv
+      when: always
+  - store_artifacts:
+      path: /tmp/license-checker-report.csv
+      when: always

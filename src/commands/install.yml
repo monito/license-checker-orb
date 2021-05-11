@@ -1,0 +1,7 @@
+description: >
+  Install the license checker
+
+steps:
+  - run:
+      name: Install license checker
+      command: npm install -g license-checker

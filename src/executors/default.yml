@@ -1,11 +1,13 @@
 description: >
-  This is a sample executor using Docker and Node.
-docker:
-  - image: 'cimg/node:<<parameters.tag>>'
+  Select the version of Node.js to use. Uses CircleCI's highly cached convenience images built for CI.
+  Any available tag from this list can be used: https://hub.docker.com/r/cimg/node/tags
+
 parameters:
   tag:
-    default: lts
-    description: >
-      Pick a specific circleci/node image variant:
-      https://hub.docker.com/r/cimg/node/tags
     type: string
+    default: 14.16.1
+    description: >
+      Pick a specific cimg/node image version tag: https://hub.docker.com/r/cimg/node
+
+docker:
+  - image: cimg/node:<< parameters.tag >>
