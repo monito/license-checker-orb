@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   license-checker: monito/license-checker@<< pipeline.parameters.dev-orb-version >>
   orb-tools: circleci/orb-tools@10.0
+  node: circleci/node@4.3.0
 
 # Pipeline Parameters
 ## These parameters are used internally by orb-tools. Skip to the Jobs section.
@@ -69,17 +70,16 @@ workflows:
   integration-test_deploy:
     when: << pipeline.parameters.run-integration-tests >>
     jobs:
-      # Check the license checker validate job
-      - license-checker/validate:
-          name: integration-test-default
-          app-dir: test-samples
-      - license-checker/validate:
-          name: integration-test-override
-          node-version: 14.16.0
-          pkg-manager: yarn
-          forbidden: GPL;LGPL
-          app-dir: test-samples
-      - integration-test-commands
+      # - license-checker/validate:
+      #     name: integration-test-jobs-default
+      #     app-dir: test-samples
+      # - license-checker/validate:
+      #     name: integration-test-jobs-override
+      #     node-version: 14.16.0
+      #     pkg-manager: yarn
+      #     forbidden: GPL;LGPL
+      #     app-dir: test-samples
+      # - integration-test-commands
 
       # Publish a semver version of the orb. relies on
       # the commit subject containing the text "[semver:patch|minor|major|skip]"
