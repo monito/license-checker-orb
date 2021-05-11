@@ -37,14 +37,13 @@ executor:
   name: default
   tag: << parameters.node-version >>
 
+working_directory: << parameters.app-dir >>
+
 steps:
   - install
   - checkout
   - node/install-packages:
       pkg-manager: << parameters.pkg-manager >>
-      app-dir: << parameters.app-dir >>
-  - run:
-      command: cd << parameters.app-dir >>
   - run:
       name: Production License Check
       command: npx license-checker --production --summary --failOn << parameters.forbidden >>

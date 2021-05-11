@@ -15,12 +15,15 @@ parameters:
     default: License Check
     description: A customized run step title for the license-checker execution
 
+working_directory: << parameters.app-dir >>
+
 steps:
   - run:
-      command: cd << parameters.app-dir >>
+      name: Check node_modules availability
+      command: |
+        if [ ! -d "node_modules" ]; then
+          exit 1;
+        fi
   - run:
       name: << parameters.title >>
       command: npx license-checker << parameters.options >>
-  - run:
-      command: cd "$OLDPWD"
-      when: always
