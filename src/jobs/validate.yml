@@ -19,19 +19,7 @@ parameters:
     description: The package manager to use to install the node modules
   forbidden:
     type: string
-    default: GPL;LGPL;CC-BY;Berkeley;AGPL;MPL;EPL;CDDL;CPL
-    description: >
-      A semi colon separated list of forbidden licenses.
-      By default, the following licenses are forbidden:
-        GNU General Public License (GPL)
-        Lesser General Public License (LGPL)
-        Creative Commons Share-Alike License (CC-BY)
-        Berkeley DB License
-        Affero General Public License (AGPL)
-        Mozilla Public License (MPL)
-        Eclipse Public License (EPL)
-        Common Development and Distribution License (CDDL)
-        Common Public License (CPL)
+    description: A semi colon separated list of forbidden licenses.
 
 executor:
   name: default
