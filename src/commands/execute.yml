@@ -1,0 +1,29 @@
+description: >
+  Execute the license checker
+
+parameters:
+  app-dir:
+    type: string
+    default: .
+    description: The location of the package.json and associated node_modules
+  options:
+    type: string
+    default: --production --summary --excludePrivatePackages
+    description: A list of options as per the license-checker CLI documentation
+  title:
+    type: string
+    default: License Check
+    description: A customized run step title for the license-checker execution
+
+steps:
+  - run:
+      name: Check node_modules availability
+      command: |
+        if [ ! -d "node_modules" ]; then
+          exit 1;
+        fi
+      working_directory: << parameters.app-dir >>
+  - run:
+      name: << parameters.title >>
+      command: npx license-checker << parameters.options >>
+      working_directory: << parameters.app-dir >>

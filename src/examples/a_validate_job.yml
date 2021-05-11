@@ -1,0 +1,11 @@
+description: >
+  Drop-in solution to automatically check your licenses.
+  This job will automatically install your application dependencies, install the license-checker, execute it, produce a summary and a report.
+usage:
+  version: 2.1
+  orbs:
+    license-checker: monito/license-checker@1.0.0
+  workflows:
+    check-production-licenses:
+      jobs:
+        - license-checker/validate
