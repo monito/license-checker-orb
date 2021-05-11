@@ -73,6 +73,7 @@ workflows:
       - license-checker/validate:
           name: integration-test-jobs-default
           app-dir: test-samples
+          forbidden: ""
       - license-checker/validate:
           name: integration-test-jobs-override
           node-version: 14.16.0
