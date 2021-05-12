@@ -1,6 +1,7 @@
 description: >
-  Drop-in solution to automatically check your licenses.
+  Drop-in solution to automatically check your production licenses.
   This job will automatically install your application dependencies, install the license-checker, execute it, produce a summary and a report.
+  With the default options, there is no check against forbidden licenses.
 usage:
   version: 2.1
   orbs:

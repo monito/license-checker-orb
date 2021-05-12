@@ -1,5 +1,7 @@
 description: >
-  Drop-in job to validate your licenses used in production are not forbidden
+  Drop-in job to validate the licenses used in production.
+  A list of forbidden licenses can be provided. If one of the license is found the build will fail.
+  A CSV report with all licences is uploaded as a build artifact.
 
 parameters:
   app-dir:
@@ -20,7 +22,9 @@ parameters:
   forbidden:
     type: string
     default: ""
-    description: A semi colon separated list of forbidden licenses.
+    description: >
+      A semi colon separated list of forbidden licenses.
+      If no value is provided the license check won't fail.
 
 executor:
   name: default
