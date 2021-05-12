@@ -20,6 +20,7 @@ parameters:
 
 integration-tests:
   &integration-tests [
+    integration-test-jobs-copyleft-default,
     integration-test-jobs-default,
     integration-test-jobs-override,
     integration-test-commands,
@@ -34,10 +35,10 @@ jobs:
       - checkout
       - node/install-packages:
           pkg-manager: yarn
-          app-dir: test-samples
+          app-dir: data-fixtures
       - license-checker/install
       - license-checker/execute:
-          app-dir: test-samples
+          app-dir: data-fixtures
           title: License Check Summary
 
 workflows:
@@ -70,15 +71,18 @@ workflows:
   integration-test_deploy:
     when: << pipeline.parameters.run-integration-tests >>
     jobs:
+      - license-checker/validate-copyleft:
+          name: integration-test-jobs-copyleft-default
+          app-dir: data-fixtures
       - license-checker/validate:
           name: integration-test-jobs-default
-          app-dir: test-samples
+          app-dir: data-fixtures
       - license-checker/validate:
           name: integration-test-jobs-override
           node-version: 14.16.0
           pkg-manager: yarn
           forbidden: GPL;LGPL;Forbidden license
-          app-dir: test-samples
+          app-dir: data-fixtures
       - integration-test-commands
 
       # Publish a semver version of the orb. relies on
@@ -92,7 +96,6 @@ workflows:
           context: orb-publishing
           add-pr-comment: true
           bot-token-variable: GITHUB_TOKEN
-          bot-user: Tech Monito
           fail-if-semver-not-indicated: true
           publish-version-tag: true
           ssh-fingerprints: "7b:05:8f:d1:4c:18:95:b8:a5:3a:15:ed:29:9c:73:c2"
