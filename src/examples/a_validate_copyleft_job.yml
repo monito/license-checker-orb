@@ -1,7 +1,7 @@
 description: >
-  Drop-in solution to automatically check your production licenses.
+  Drop-in solution to automatically check your production licenses do not contain any Copyleft licenses.
   This job will automatically install your application dependencies, install the license-checker, execute it, produce a summary and a report.
-  With the default options, there is no check against forbidden licenses.
+  If a Copyleft license is found the build will fail.
 usage:
   version: 2.1
   orbs:
@@ -9,4 +9,4 @@ usage:
   workflows:
     check-production-licenses:
       jobs:
-        - license-checker/validate
+        - license-checker/validate-copyleft

@@ -1,9 +1,9 @@
 version: 2.1
 
 description: >
-  Integrate the license checker into your build.
-  Get report about the licenses used by your project.
-  Failed your build in case of forbidden licenses.
+  Integrate the license-checker check into your build.
+  Get a report about the production licenses used by your project.
+  Optionally fail your build based on a list of forbidden licenses.
 
 display:
   home_url: "https://github.com/monito"
