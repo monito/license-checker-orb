@@ -19,8 +19,8 @@ parameters:
     default: "dev:alpha"
 
 integration-tests:
+  # integration-test-jobs-copyleft-default,
   &integration-tests [
-    integration-test-jobs-copyleft-default,
     integration-test-jobs-default,
     integration-test-jobs-override,
     integration-test-commands,
@@ -71,9 +71,9 @@ workflows:
   integration-test_deploy:
     when: << pipeline.parameters.run-integration-tests >>
     jobs:
-      - license-checker/validate-copyleft:
-          name: integration-test-jobs-copyleft-default
-          app-dir: data-fixtures
+      # - license-checker/validate-copyleft:
+      #     name: integration-test-jobs-copyleft-default
+      #     app-dir: data-fixtures
       - license-checker/validate:
           name: integration-test-jobs-default
           app-dir: data-fixtures
