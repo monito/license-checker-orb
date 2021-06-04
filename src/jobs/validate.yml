@@ -19,6 +19,12 @@ parameters:
     enum: [npm, yarn]
     default: yarn
     description: The package manager to use to install the node modules
+  override-ci-command:
+    type: string
+    default: ""
+    description: >
+      By default, packages will be installed with "npm ci", "yarn install --frozen-lockfile" or "yarn install --immutable".
+      Optionally supply a custom package installation command, with any additional flags needed.
   forbidden:
     type: string
     default: ""
@@ -36,6 +42,7 @@ steps:
   - node/install-packages:
       pkg-manager: << parameters.pkg-manager >>
       app-dir: << parameters.app-dir >>
+      override-ci-command: << parameters.override-ci-command >>
   - run:
       name: Production License Check
       command: npx license-checker --production --summary --excludePrivatePackages --failOn "<< parameters.forbidden >>"
