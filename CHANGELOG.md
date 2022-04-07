@@ -11,9 +11,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - new `license-checker/validate` command
 - new `license-checker/validate-copyleft` command
 
+### Breaking change
+
+- Remove `forbidden` parameter from `license-checker/validate-copyleft` job. Use `license-checker/validate` job if you want to customize the list of forbidden licenses.
+
 ### Changed
 
-- Set default node version to `lts`
+- Update default node executor version to use the `lts` tag
 - Upgrade `circleci/node` orb
 - Upload license report artifacts relative to `app-dir`
 
