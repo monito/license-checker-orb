@@ -11,13 +11,15 @@ parameters:
     description: The location of the package.json and associated node_modules
   node-version:
     type: string
-    default: 14.16.1
+    default: lts
     description: >
-      A full node version tag must be specified. Example: 14.16.1
-      For a full list of releases, see the following: https://nodejs.org/en/download/releases
+      Pick a specific cimg/node image version tag: https://hub.docker.com/r/cimg/node
   pkg-manager:
     type: enum
-    enum: [npm, yarn]
+    enum:
+      - npm
+      - yarn
+      - yarn-berry
     default: yarn
     description: The package manager to use to install the node modules
   override-ci-command:
@@ -26,46 +28,16 @@ parameters:
     description: >
       By default, packages will be installed with "npm ci", "yarn install --frozen-lockfile" or "yarn install --immutable".
       Optionally supply a custom package installation command, with any additional flags needed.
-  forbidden:
-    type: string
-    default: "GPL;LGPL;CC-BY;Berkeley;AGPL;MPL;EPL;CDDL;CPL"
-    description: >
-      List of default Copyleft licenses forbidden:
-        GNU General Public License (GPL)
-        Lesser General Public License (LGPL)
-        Creative Commons Share-Alike License (CC-BY)
-        Berkeley DB License
-        Affero General Public License (AGPL)
-        Mozilla Public License (MPL)
-        Eclipse Public License (EPL)
-        Common Development and Distribution License (CDDL)
-        Common Public License (CPL)
 
 executor:
   name: default
   tag: << parameters.node-version >>
 
 steps:
-  - install
   - checkout
   - node/install-packages:
       pkg-manager: << parameters.pkg-manager >>
       app-dir: << parameters.app-dir >>
       override-ci-command: << parameters.override-ci-command >>
-  - run:
-      name: Production License Check
-      command: npx license-checker --production --summary --excludePrivatePackages --failOn "<< parameters.forbidden >>"
-      working_directory: << parameters.app-dir >>
-  - run:
-      name: Production license summary
-      command: npx license-checker --production --summary --excludePrivatePackages
-      working_directory: << parameters.app-dir >>
-      when: on_fail
-  - run:
-      name: Build production license report
-      command: npx license-checker --production --excludePrivatePackages --csv > /tmp/license-checker-report.csv
-      working_directory: << parameters.app-dir >>
-      when: always
-  - store_artifacts:
-      path: /tmp/license-checker-report.csv
-      when: always
+  - validate-copyleft:
+      app-dir: << parameters.app-dir >>

@@ -1,0 +1,30 @@
+description: >
+  Command to validate none of your licenses used in production are Copyleft licenses.
+  Copyleft software licenses are considered protective or reciprocal in contrast with permissive free software licenses.
+  If one of the Copyleft license is found the build will fail.
+  A CSV report with all licences is uploaded as a build artifact.
+
+parameters:
+  app-dir:
+    type: string
+    default: .
+    description: The location of the package.json and associated node_modules
+  forbidden:
+    type: string
+    default: "GPL;LGPL;CC-BY;Berkeley;AGPL;MPL;EPL;CDDL;CPL"
+    description: >
+      List of default Copyleft licenses forbidden:
+        GNU General Public License (GPL)
+        Lesser General Public License (LGPL)
+        Creative Commons Share-Alike License (CC-BY)
+        Berkeley DB License
+        Affero General Public License (AGPL)
+        Mozilla Public License (MPL)
+        Eclipse Public License (EPL)
+        Common Development and Distribution License (CDDL)
+        Common Public License (CPL)
+
+steps:
+  - validate:
+      forbidden: << parameters.forbidden >>
+      app-dir: << parameters.app-dir >>
