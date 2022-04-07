@@ -33,6 +33,11 @@ parameters:
     description: >
       A semi colon separated list of forbidden licenses.
       If no value is provided the license check won't fail.
+  report-name:
+    type: string
+    default: license-checker-report
+    description: >
+      Name of the license checker report artifact.
 
 executor:
   name: default
@@ -47,3 +52,4 @@ steps:
   - validate:
       forbidden: << parameters.forbidden >>
       app-dir: << parameters.app-dir >>
+      report-name: << parameters.report-name >>

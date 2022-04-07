@@ -28,6 +28,11 @@ parameters:
     description: >
       By default, packages will be installed with "npm ci", "yarn install --frozen-lockfile" or "yarn install --immutable".
       Optionally supply a custom package installation command, with any additional flags needed.
+  report-name:
+    type: string
+    default: license-checker-report
+    description: >
+      Name of the license checker report artifact.
 
 executor:
   name: default
@@ -41,3 +46,4 @@ steps:
       override-ci-command: << parameters.override-ci-command >>
   - validate-copyleft:
       app-dir: << parameters.app-dir >>
+      report-name: << parameters.report-name >>

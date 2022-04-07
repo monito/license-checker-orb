@@ -14,7 +14,11 @@ parameters:
     description: >
       A semi colon separated list of forbidden licenses.
       If no value is provided the license check won't fail.
-
+  report-name:
+    type: string
+    default: license-checker-report
+    description: >
+      Name of the license checker report artifact.
 steps:
   - install
   - run:
@@ -28,9 +32,10 @@ steps:
       when: on_fail
   - run:
       name: Build production license report
-      command: npx license-checker --production --excludePrivatePackages --csv > /tmp/license-checker-report.csv
+      command: npx license-checker --production --excludePrivatePackages --csv > /tmp/<< parameters.report-name >>.csv
       working_directory: << parameters.app-dir >>
       when: always
   - store_artifacts:
-      path: /tmp/license-checker-report.csv
+      path: /tmp/<< parameters.report-name >>.csv
+      destination: << parameters.app-dir >>/<< parameters.report-name >>.csv
       when: always

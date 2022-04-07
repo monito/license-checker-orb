@@ -23,8 +23,13 @@ parameters:
         Eclipse Public License (EPL)
         Common Development and Distribution License (CDDL)
         Common Public License (CPL)
-
+  report-name:
+    type: string
+    default: license-checker-report
+    description: >
+      Name of the license checker report artifact.
 steps:
   - validate:
-      forbidden: << parameters.forbidden >>
       app-dir: << parameters.app-dir >>
+      report-name: << parameters.report-name >>
+      forbidden: << parameters.forbidden >>
