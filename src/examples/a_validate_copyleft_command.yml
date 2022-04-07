@@ -1,0 +1,21 @@
+description: >
+  Command to validate none of your licenses used in production are Copyleft licenses.
+  Copyleft software licenses are considered protective or reciprocal in contrast with permissive free software licenses.
+  If one of the Copyleft license is found the build will fail.
+  A CSV report with all licences is uploaded as a build artifact.
+usage:
+  version: 2.1
+  orbs:
+    node: circleci/node@x.y
+    license-checker: monito/license-checker@x.y
+  jobs:
+    check-production-licenses:
+      executor: node/default
+      steps:
+        - checkout
+        - node/install-packages
+        - license-checker/validate-copyleft
+  workflows:
+    test:
+      jobs:
+        - check-production-licenses
