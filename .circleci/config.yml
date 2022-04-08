@@ -30,16 +30,20 @@ jobs:
   # Define one or more jobs which will utilize your orb's commands and parameters to validate your changes.
   integration-test-commands:
     docker:
-      - image: cimg/node:14.16
+      - image: cimg/node:lts
     steps:
       - checkout
       - node/install-packages:
           pkg-manager: yarn
           app-dir: data-fixtures
       - license-checker/install
-      - license-checker/execute:
+      - license-checker/validate:
           app-dir: data-fixtures
-          title: License Check Summary
+      - license-checker/validate:
+          app-dir: data-fixtures
+          forbidden: GPL;LGPL;Forbidden license
+      - license-checker/validate-copyleft:
+          app-dir: data-fixtures
 
 workflows:
   # Prior to producing a development orb (which requires credentials) basic validation, linting, and even unit testing can be performed.

@@ -6,7 +6,7 @@ description: >
 usage:
   version: 2.1
   orbs:
-    license-checker: monito/license-checker@1.2.0
+    license-checker: monito/license-checker@x.y
   workflows:
     check-production-licenses:
       jobs:

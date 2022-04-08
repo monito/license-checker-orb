@@ -1,0 +1,20 @@
+description: >
+  Command to validate the licenses used in production.
+  A list of forbidden licenses can be provided. If one of the license is found the build will fail.
+  A CSV report with all licences is uploaded as a build artifact.
+usage:
+  version: 2.1
+  orbs:
+    node: circleci/node@x.y
+    license-checker: monito/license-checker@x.y
+  jobs:
+    check-production-licenses:
+      executor: node/default
+      steps:
+        - checkout
+        - node/install-packages
+        - license-checker/validate
+  workflows:
+    test:
+      jobs:
+        - check-production-licenses
