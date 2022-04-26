@@ -83,7 +83,7 @@ workflows:
           app-dir: data-fixtures
       - license-checker/validate:
           name: integration-test-jobs-override
-          node-version: 14.16.0
+          node-version: 14.17.1
           pkg-manager: yarn
           forbidden: GPL;LGPL;Forbidden license
           app-dir: data-fixtures
