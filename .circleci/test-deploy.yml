@@ -30,7 +30,6 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn
           app-dir: data-fixtures
-      - license-checker/install
       - license-checker/validate:
           app-dir: data-fixtures
       - license-checker/validate:
