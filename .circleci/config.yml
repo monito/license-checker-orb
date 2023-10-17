@@ -14,9 +14,9 @@ parameters:
     default: false
   dev-orb-version:
     description: >
-      The development version of the orb to test. This value is automatically adjusted by the "trigger-integration-tests-workflow" job to correspond with the specific version created by the commit and should not be edited. A "dev:alpha" version must exist for the initial pipeline run.
+      The development version of the orb to test. This value is automatically adjusted by the "trigger-integration-tests-workflow" job to correspond with the specific version created by the commit and should not be edited.
     type: string
-    default: "dev:alpha"
+    default: '2.0.1'
 
 integration-tests:
   &integration-tests [
@@ -102,7 +102,7 @@ workflows:
           bot-token-variable: GITHUB_TOKEN
           fail-if-semver-not-indicated: true
           publish-version-tag: true
-          ssh-fingerprints: "7b:05:8f:d1:4c:18:95:b8:a5:3a:15:ed:29:9c:73:c2"
+          ssh-fingerprints: '7b:05:8f:d1:4c:18:95:b8:a5:3a:15:ed:29:9c:73:c2'
           requires: *integration-tests
           filters:
             branches:
