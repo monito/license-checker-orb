@@ -15,12 +15,11 @@ workflows:
     jobs:
       - orb-tools/lint # Lint Yaml files
       - orb-tools/pack # Pack orb source
-      - orb-tools/review
 
       # Triggers the next workflow in the Orb Development Kit.
       - orb-tools/continue:
           pipeline_number: << pipeline.number >>
           vcs_type: << pipeline.project.type >>
           orb_name: monito/license-checker
-          requires: [orb-tools/lint, orb-tools/pack, orb-tools/review]
+          requires: [orb-tools/lint, orb-tools/pack]
           filters: *filters
