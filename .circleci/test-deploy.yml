@@ -1,0 +1,74 @@
+version: 2.1
+orbs:
+  # Your orb will be automatically injected here during the pipeline.
+  # Reference your orb's jobs and commands below as they will exist when built.
+  orb-tools: circleci/orb-tools@12.0
+  # The orb definition is intentionally not included here. It will be injected into the pipeline.
+  <orb-name>: {}
+
+# Use this tag to ensure test jobs always run,
+# even though the downstream publish job will only run on release tags.
+filters: &filters
+  tags:
+    only: /.*/
+
+# Filter for release tags.
+release-filters: &release-filters
+  branches:
+    ignore: /.*/
+  tags:
+    only: /^v[0-9]+\.[0-9]+\.[0-9]+$/
+
+jobs:
+  # Define one or more jobs which will utilize your orb's commands and parameters to validate your changes.
+  integration-test-commands:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+          app-dir: data-fixtures
+      - license-checker/install
+      - license-checker/validate:
+          app-dir: data-fixtures
+      - license-checker/validate:
+          app-dir: data-fixtures
+          forbidden: GPL;LGPL;Forbidden license
+      - license-checker/validate-copyleft:
+          app-dir: data-fixtures
+workflows:
+  test-deploy:
+    jobs:
+      - license-checker/validate-copyleft:
+          name: integration-test-jobs-copyleft-default
+          app-dir: data-fixtures
+          filters: *filters
+      - license-checker/validate:
+          name: integration-test-jobs-default
+          app-dir: data-fixtures
+          filters: *filters
+      - license-checker/validate:
+          name: integration-test-jobs-override
+          node-version: 14.17.1
+          pkg-manager: yarn
+          forbidden: GPL;LGPL;Forbidden license
+          app-dir: data-fixtures
+          filters: *filters
+      - integration-test-commands:
+          filters: *filters
+      - orb-tools/pack:
+          filters: *release-filters
+      - orb-tools/publish:
+          orb_name: monito/license-checker
+          vcs_type: << pipeline.project.type >>
+          pub_type: production
+          # Ensure this job requires all test jobs and the pack job.
+          requires:
+            - orb-tools/pack
+            - integration-test-jobs-copyleft-default
+            - integration-test-jobs-default
+            - integration-test-jobs-override
+            - integration-test-commands
+          context: <publishing-context>
+          filters: *release-filters
