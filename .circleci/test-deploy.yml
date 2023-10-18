@@ -70,5 +70,5 @@ workflows:
             - integration-test-jobs-default
             - integration-test-jobs-override
             - integration-test-commands
-          context: <publishing-context>
+          context: orb-publishing
           filters: *release-filters
