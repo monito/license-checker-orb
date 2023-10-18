@@ -11,3 +11,7 @@ For full usage guidelines, see the [orb registry listing](https://circleci.com/d
 We welcome [issues](https://github.com/monito/license-checker-orb/issues) to and [pull requests](https://github.com/monito/license-checker-orb/pulls) against this repository!
 
 For further questions/comments about this orb, visit the [discussions](https://github.com/monito/license-checker-orb/discussions).
+
+For more information about the Orb publishing process, see:
+- https://circleci.com/developer/orbs/orb/circleci/orb-tools
+- https://circleci.com/docs/creating-orbs/
