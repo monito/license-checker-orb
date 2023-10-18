@@ -13,8 +13,10 @@ workflows:
   # This workflow will run on every commit
   test-pack:
     jobs:
-      - orb-tools/lint # Lint Yaml files
-      - orb-tools/pack # Pack orb source
+      - orb-tools/lint: # Lint Yaml files
+          filters: *filters
+      - orb-tools/pack: # Pack orb source
+          filters: *filters
 
       # Triggers the next workflow in the Orb Development Kit.
       - orb-tools/continue:
