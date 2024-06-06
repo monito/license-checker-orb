@@ -40,7 +40,7 @@ executor:
 
 steps:
   - checkout
-  - run: sudo corepack enable
+  - run: if [ "null" != $(jq -r '.packageManager' package.json) ]; then sudo corepack enable ;fi
   - node/install-packages:
       pkg-manager: << parameters.pkg-manager >>
       app-dir: << parameters.app-dir >>
