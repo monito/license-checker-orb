@@ -1,14 +1,20 @@
 description: >
-  Command to validate none of your licenses used in production are Copyleft licenses.
+  Command to validate none of your licenses are Copyleft licenses.
+  By default both production and development dependencies are checked.
   Copyleft software licenses are considered protective or reciprocal in contrast with permissive free software licenses.
   If one of the Copyleft license is found the build will fail.
-  A CSV report with all licences is uploaded as a build artifact.
+  A CSV report is uploaded as a build artifact for each dependency set (production and development).
 
 parameters:
   app-dir:
     type: string
     default: .
     description: The location of the package.json and associated node_modules
+  exclude-private:
+    type: boolean
+    default: true
+    description: >
+      When true (the default), private packages are excluded from the checks and the reports.
   forbidden:
     type: string
     default: "GPL;LGPL;CC-BY;Berkeley;AGPL;MPL;EPL;CDDL;CPL"
@@ -23,13 +29,22 @@ parameters:
         Eclipse Public License (EPL)
         Common Development and Distribution License (CDDL)
         Common Public License (CPL)
+  production-only:
+    type: boolean
+    default: false
+    description: >
+      When true, only production dependencies are checked and reported.
+      By default both production and development dependencies are validated.
   report-name:
     type: string
     default: license-checker-report
     description: >
-      Name of the license checker report artifact.
+      Base name of the license checker report artifacts.
+      Reports are suffixed with "-production" and "-development".
 steps:
   - validate:
       app-dir: << parameters.app-dir >>
       report-name: << parameters.report-name >>
       forbidden: << parameters.forbidden >>
+      production-only: << parameters.production-only >>
+      exclude-private: << parameters.exclude-private >>

@@ -1,6 +1,6 @@
 # License Checker Orb [![CircleCI Build Status](https://circleci.com/gh/monito/license-checker-orb.svg?style=shield "CircleCI Build Status")](https://circleci.com/gh/monito/license-checker-orb) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/monito/license-checker-orb/main/LICENSE)
 
-A Circle CI orb to check licenses used in production, based on [license-checker](https://www.npmjs.com/package/license-checker)
+A Circle CI orb to check the licenses used by your project (production and development dependencies), based on [license-checker](https://www.npmjs.com/package/license-checker)
 
 ## Usage
 

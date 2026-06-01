@@ -34,6 +34,12 @@ jobs:
           app-dir: data-fixtures
       - license-checker/validate:
           app-dir: data-fixtures
+          production-only: true
+      - license-checker/validate:
+          app-dir: data-fixtures
+          exclude-private: false
+      - license-checker/validate:
+          app-dir: data-fixtures
           forbidden: GPL;LGPL;Forbidden license
       - license-checker/validate-copyleft:
           app-dir: data-fixtures
@@ -47,6 +53,11 @@ workflows:
       - license-checker/validate:
           name: integration-test-jobs-default
           app-dir: data-fixtures
+          filters: *filters
+      - license-checker/validate:
+          name: integration-test-jobs-production-only
+          app-dir: data-fixtures
+          production-only: true
           filters: *filters
       - license-checker/validate:
           name: integration-test-jobs-override
@@ -68,6 +79,7 @@ workflows:
             - orb-tools/pack
             - integration-test-jobs-copyleft-default
             - integration-test-jobs-default
+            - integration-test-jobs-production-only
             - integration-test-jobs-override
             - integration-test-commands
           context: orb-publishing

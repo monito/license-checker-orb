@@ -1,13 +1,19 @@
 description: >
-  Drop-in job to validate the licenses used in production.
-  A list of forbidden licenses can be provided. If one of the license is found the build will fail.
-  A CSV report with all licences is uploaded as a build artifact.
+  Drop-in job to validate the licenses used by your project.
+  By default both production and development dependencies are checked.
+  A list of forbidden licenses can be provided. If one of the licenses is found the build will fail.
+  A CSV report is uploaded as a build artifact for each dependency set (production and development).
 
 parameters:
   app-dir:
     type: string
     default: .
     description: The location of the package.json and associated node_modules
+  exclude-private:
+    type: boolean
+    default: true
+    description: >
+      When true (the default), private packages are excluded from the checks and the reports.
   node-version:
     type: string
     default: lts
@@ -33,11 +39,18 @@ parameters:
     description: >
       A semi colon separated list of forbidden licenses.
       If no value is provided the license check won't fail.
+  production-only:
+    type: boolean
+    default: false
+    description: >
+      When true, only production dependencies are checked and reported.
+      By default both production and development dependencies are validated.
   report-name:
     type: string
     default: license-checker-report
     description: >
-      Name of the license checker report artifact.
+      Base name of the license checker report artifacts.
+      Reports are suffixed with "-production" and "-development".
 
 executor:
   name: default
@@ -52,4 +65,6 @@ steps:
   - validate:
       forbidden: << parameters.forbidden >>
       app-dir: << parameters.app-dir >>
+      production-only: << parameters.production-only >>
+      exclude-private: << parameters.exclude-private >>
       report-name: << parameters.report-name >>
