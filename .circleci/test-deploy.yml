@@ -2,10 +2,10 @@ version: 2.1
 orbs:
   # Your orb will be automatically injected here during the pipeline.
   # Reference your orb's jobs and commands below as they will exist when built.
-  orb-tools: circleci/orb-tools@12.0
+  orb-tools: circleci/orb-tools@12
   # The orb definition is intentionally not included here. It will be injected into the pipeline.
   license-checker: {}
-  node: circleci/node@4.3.0
+  node: circleci/node@7
 
 # Use this tag to ensure test jobs always run,
 # even though the downstream publish job will only run on release tags.
