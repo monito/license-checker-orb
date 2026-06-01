@@ -1,18 +1,19 @@
 description: >
-  Drop-in solution to automatically check your production licenses.
+  Drop-in solution to automatically check your licenses.
   This job will automatically install your application dependencies, install the license-checker, execute it, produce a summary and a report.
   Based on the given list of forbidden licenses, the build will fail if one is detected.
-  You can also override the node version, the package manager, or the application directory.
+  You can restrict the check to production dependencies with production-only, and override the node version, the package manager, or the application directory.
 usage:
   version: 2.1
   orbs:
     license-checker: monito/license-checker@x.y
   workflows:
-    check-production-licenses:
+    check-licenses:
       jobs:
         - license-checker/validate:
             name: validate-with-against-a-forbidden-list
             forbidden: GPL;LGPL;Forbidden license
+            production-only: true
             node-version: 14.16.0
             pkg-manager: yarn
             app-dir: where-the-node-modules-are

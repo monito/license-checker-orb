@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0]
+
+### Changed
+
+- **BREAKING:** Development dependencies are now checked and reported by default. Previously only production dependencies were validated. Set `production-only: true` to restore the previous behavior.
+- **BREAKING:** The production CSV report artifact is now named `<report-name>-production.csv` (was `<report-name>.csv`). Update any tooling that consumes the report by its previous path.
+- Update license
+- Upgrade circleci/node version
+
+### Added
+
+- A separate CSV report is now generated for development dependencies: `<report-name>-development.csv`.
+- `production-only` option (false by default) to restrict the checks and reports to production dependencies.
+- `exclude-private` option (true by default) to exclude private packages from the checks and reports.
 
 ## [3.0.2]
 
@@ -16,7 +30,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - Update `orb-tools` and CI
-
 
 ## [3.0.0]
 
