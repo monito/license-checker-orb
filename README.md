@@ -20,8 +20,7 @@ package manager itself, then scans what remains:
 | `pkg-manager` | production prune |
 |---|---|
 | `npm` | `npm ci --omit=dev` |
-| `yarn` | `yarn install --production --frozen-lockfile` |
-| `yarn-berry` | `yarn workspaces focus --all --production` |
+| `yarn` / `yarn-berry` | `yarn workspaces focus --all --production` on Yarn Berry (>= 2), `yarn install --production --frozen-lockfile` on Yarn Classic (1.x) — the actual Yarn version is detected at runtime |
 | `pnpm` | `pnpm install --prod --frozen-lockfile` |
 
 Two CSV artifacts are produced:

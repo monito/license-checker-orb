@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.1]
+
+### Fixed
+
+- The "Prune node_modules to the production closure" step no longer fails on Yarn Berry
+  repositories that are passed (or auto-detected) as `pkg-manager: yarn`. Previously the
+  classic-`yarn` path always ran `yarn install --production --frozen-lockfile`, and both
+  flags are removed and fatal on Yarn Berry (`YN0050`), aborting the build. The prune step
+  now detects the actual Yarn major version at runtime and uses
+  `yarn workspaces focus --all --production` on Yarn Berry (>= 2) while keeping the legacy
+  flags for Yarn Classic (1.x), so both `yarn` and `yarn-berry` work on any Yarn version.
+
 ## [5.0.0]
 
 ### Changed

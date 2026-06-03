@@ -25,8 +25,10 @@ parameters:
     description: >
       The package manager used to install the node modules. It selects how node_modules is
       pruned to the production closure before the production report is generated
-      (npm: "npm ci --omit=dev"; yarn: "yarn install --production --frozen-lockfile";
-      yarn-berry: "yarn workspaces focus --all --production"; pnpm: "pnpm install --prod --frozen-lockfile").
+      (npm: "npm ci --omit=dev"; pnpm: "pnpm install --prod --frozen-lockfile"). For yarn
+      and yarn-berry the actual Yarn version is detected at runtime: Yarn Classic (1.x) uses
+      "yarn install --production --frozen-lockfile", Yarn Berry (>= 2) uses
+      "yarn workspaces focus --all --production", so passing either value works for any Yarn version.
       Job callers inherit this from the job's pkg-manager; direct command callers must set it
       to match their project.
   exclude-private:
@@ -89,11 +91,20 @@ steps:
           npm)
             npm ci --omit=dev
             ;;
-          yarn)
-            yarn install --production --frozen-lockfile
-            ;;
-          yarn-berry)
-            yarn workspaces focus --all --production
+          yarn|yarn-berry)
+            # The pkg-manager parameter often misclassifies the Yarn flavour (e.g. a Yarn
+            # Berry repo passed as plain "yarn"), so detect the actual major version at
+            # runtime and prune with the command that version supports.
+            yarn_major="$(yarn --version | cut -d. -f1)"
+            if [ "${yarn_major:-1}" -ge 2 ]; then
+              # Yarn Berry (>= 2): --production / --frozen-lockfile are removed and fatal.
+              # "workspaces focus --all" installs the production closure of every workspace
+              # (and of the root, which is itself a workspace), so it also covers single-package repos.
+              yarn workspaces focus --all --production
+            else
+              # Yarn Classic (1.x): no "workspaces focus" command; use the legacy flags.
+              yarn install --production --frozen-lockfile
+            fi
             ;;
           pnpm)
             pnpm install --prod --frozen-lockfile
