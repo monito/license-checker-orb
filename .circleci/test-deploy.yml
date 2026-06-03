@@ -84,6 +84,34 @@ jobs:
               echo "FAIL: forbidding MIT did not trip the gate over the production closure"; exit 1
             fi
             echo "OK: forbidding MIT trips the gate (workspace prod dep is seen)"
+  # Regression test for a Yarn Berry repo that is (mis)classified as plain "yarn".
+  # The prune step must detect the real Yarn version at runtime and use
+  # "yarn workspaces focus" rather than the legacy "--production --frozen-lockfile"
+  # flags, which are fatal on Yarn Berry (YN0050).
+  integration-test-monorepo-misclassified-as-yarn:
+    docker:
+      - image: cimg/node:22.13
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn-berry
+          app-dir: data-fixtures-monorepo
+      - license-checker/validate:
+          app-dir: data-fixtures-monorepo
+          # Deliberately wrong: this is a Yarn Berry repo, but callers (or auto-detection)
+          # sometimes pass plain "yarn". The prune step must still succeed.
+          pkg-manager: yarn
+          exclude-private: false
+          report-name: misclassified-report
+      - run:
+          name: Assert the production report was still built correctly
+          working_directory: data-fixtures-monorepo
+          command: |
+            grep -iq '"ms@' /tmp/misclassified-report-production.csv \
+              || { echo "FAIL: ms (workspace app prod dep) missing from production report"; exit 1; }
+            grep -iq '"chalk@' /tmp/misclassified-report-production.csv \
+              && { echo "FAIL: chalk (devDependency) leaked into production report"; exit 1; }
+            echo "OK: prune succeeded and production report is correct despite pkg-manager=yarn"
 workflows:
   test-deploy:
     jobs:
@@ -111,6 +139,8 @@ workflows:
           filters: *filters
       - integration-test-monorepo:
           filters: *filters
+      - integration-test-monorepo-misclassified-as-yarn:
+          filters: *filters
       - orb-tools/pack:
           filters: *release-filters
       - orb-tools/publish:
@@ -126,5 +156,6 @@ workflows:
             - integration-test-jobs-override
             - integration-test-commands
             - integration-test-monorepo
+            - integration-test-monorepo-misclassified-as-yarn
           context: orb-publishing
           filters: *release-filters
