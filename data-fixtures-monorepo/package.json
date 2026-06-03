@@ -1,0 +1,12 @@
+{
+  "name": "@monito/test-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "yarn@4.9.1",
+  "workspaces": [
+    "apps/*"
+  ],
+  "devDependencies": {
+    "chalk": "^5.4.1"
+  }
+}
