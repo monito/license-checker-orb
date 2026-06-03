@@ -43,6 +43,47 @@ jobs:
           forbidden: GPL;LGPL;Forbidden license
       - license-checker/validate-copyleft:
           app-dir: data-fixtures
+  integration-test-monorepo:
+    docker:
+      - image: cimg/node:22.13
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn-berry
+          app-dir: data-fixtures-monorepo
+      - license-checker/validate:
+          app-dir: data-fixtures-monorepo
+          pkg-manager: yarn-berry
+          exclude-private: false
+          report-name: monorepo-report
+      - run:
+          name: Assert workspace production dep is in the production report
+          working_directory: data-fixtures-monorepo
+          command: |
+            echo "Production report:"; cat /tmp/monorepo-report-production.csv
+            grep -iq '"ms@' /tmp/monorepo-report-production.csv \
+              || { echo "FAIL: ms (workspace app prod dep) missing from production report"; exit 1; }
+            grep -iq '"chalk@' /tmp/monorepo-report-production.csv \
+              && { echo "FAIL: chalk (devDependency) leaked into production report"; exit 1; }
+            echo "OK: production report contains ms and not chalk"
+      - run:
+          name: Assert all-dependencies report contains both prod and dev deps
+          working_directory: data-fixtures-monorepo
+          command: |
+            grep -iq '"ms@' /tmp/monorepo-report-all.csv \
+              || { echo "FAIL: ms missing from all report"; exit 1; }
+            grep -iq '"chalk@' /tmp/monorepo-report-all.csv \
+              || { echo "FAIL: chalk missing from all report"; exit 1; }
+            echo "OK: all report contains ms and chalk"
+      - run:
+          name: Assert forbidden license in a workspace prod dep trips the gate
+          working_directory: data-fixtures-monorepo
+          command: |
+            # node_modules is already pruned to the production closure by the validate command above.
+            if npx license-checker --csv --failOn MIT >/dev/null 2>&1; then
+              echo "FAIL: forbidding MIT did not trip the gate over the production closure"; exit 1
+            fi
+            echo "OK: forbidding MIT trips the gate (workspace prod dep is seen)"
 workflows:
   test-deploy:
     jobs:
@@ -68,6 +109,8 @@ workflows:
           filters: *filters
       - integration-test-commands:
           filters: *filters
+      - integration-test-monorepo:
+          filters: *filters
       - orb-tools/pack:
           filters: *release-filters
       - orb-tools/publish:
@@ -82,5 +125,6 @@ workflows:
             - integration-test-jobs-production-only
             - integration-test-jobs-override
             - integration-test-commands
+            - integration-test-monorepo
           context: orb-publishing
           filters: *release-filters

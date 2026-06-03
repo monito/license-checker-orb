@@ -3,13 +3,24 @@ description: >
   By default both production and development dependencies are checked.
   Copyleft software licenses are considered protective or reciprocal in contrast with permissive free software licenses.
   If one of the Copyleft license is found the build will fail.
-  A CSV report is uploaded as a build artifact for each dependency set (production and development).
+  A CSV report is uploaded as a build artifact for each dependency set (production and all dependencies).
 
 parameters:
   app-dir:
     type: string
     default: .
     description: The location of the package.json and associated node_modules
+  pkg-manager:
+    type: enum
+    enum:
+      - npm
+      - yarn
+      - yarn-berry
+      - pnpm
+    default: yarn
+    description: >
+      The package manager used to install the node modules. Passed through to the validate
+      command, where it selects how node_modules is pruned to the production closure.
   exclude-private:
     type: boolean
     default: true
@@ -44,6 +55,7 @@ parameters:
 steps:
   - validate:
       app-dir: << parameters.app-dir >>
+      pkg-manager: << parameters.pkg-manager >>
       report-name: << parameters.report-name >>
       forbidden: << parameters.forbidden >>
       production-only: << parameters.production-only >>

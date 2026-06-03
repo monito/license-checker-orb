@@ -1,10 +1,41 @@
 # License Checker Orb [![CircleCI Build Status](https://circleci.com/gh/monito/license-checker-orb.svg?style=shield "CircleCI Build Status")](https://circleci.com/gh/monito/license-checker-orb) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/monito/license-checker-orb/main/LICENSE)
 
-A Circle CI orb to check the licenses used by your project (production and development dependencies), based on [license-checker](https://www.npmjs.com/package/license-checker)
+A Circle CI orb to check the licenses used by your project — for both the production dependency closure and all installed dependencies, including in workspaces monorepos — based on [license-checker](https://www.npmjs.com/package/license-checker)
 
 ## Usage
 
 For full usage guidelines, see the [orb registry listing](https://circleci.com/developer/orbs/orb/monito/license-checker).
+
+## Monorepo & package manager support
+
+The orb supports `npm`, `yarn` (classic v1), `yarn-berry`, and `pnpm` via the
+`pkg-manager` parameter, and produces correct production reports for both
+single-package repos and **workspaces monorepos**.
+
+Rather than trusting `license-checker --production` (which only understands the
+root `package.json` and reports an effectively empty production set in a workspaces
+monorepo), the orb prunes `node_modules` to the production closure using the
+package manager itself, then scans what remains:
+
+| `pkg-manager` | production prune |
+|---|---|
+| `npm` | `npm ci --omit=dev` |
+| `yarn` | `yarn install --production --frozen-lockfile` |
+| `yarn-berry` | `yarn workspaces focus --all --production` |
+| `pnpm` | `pnpm install --prod --frozen-lockfile` |
+
+Two CSV artifacts are produced:
+
+- `<report-name>-production.csv` — the production dependency closure only.
+- `<report-name>-all.csv` — every installed dependency (production + development).
+
+By default the forbidden-license gate runs against the all-dependencies set
+(a superset of production). Set `production-only: true` to gate and report on the
+production closure alone.
+
+> **Yarn Berry note:** `license-checker` scans `node_modules`, which Yarn Berry's
+> default Plug'n'Play linker does not create. Yarn-berry projects must set
+> `nodeLinker: node-modules` in `.yarnrc.yml`.
 
 ## Releasing
 

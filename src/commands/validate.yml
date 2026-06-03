@@ -1,14 +1,34 @@
 description: >
   Command to validate the licenses used by your project.
-  By default both production and development dependencies are checked.
-  A list of forbidden licenses can be provided. If one of the licenses is found the build will fail.
-  A CSV report is uploaded as a build artifact for each dependency set (production and development).
+  Two CSV reports are produced as build artifacts:
+    <report-name>-production.csv  the production dependency closure only.
+    <report-name>-all.csv         every installed dependency (production + development).
+  The production report is built by pruning node_modules to the production closure with the
+  project's package manager, then scanning what remains. This is correct for single-package
+  repos and workspaces monorepos alike (it does not rely on license-checker's --production flag,
+  which only understands the root package.json).
+  A semicolon separated list of forbidden licenses can be provided; if one is found the build fails.
 
 parameters:
   app-dir:
     type: string
     default: .
     description: The location of the package.json and associated node_modules
+  pkg-manager:
+    type: enum
+    enum:
+      - npm
+      - yarn
+      - yarn-berry
+      - pnpm
+    default: yarn
+    description: >
+      The package manager used to install the node modules. It selects how node_modules is
+      pruned to the production closure before the production report is generated
+      (npm: "npm ci --omit=dev"; yarn: "yarn install --production --frozen-lockfile";
+      yarn-berry: "yarn workspaces focus --all --production"; pnpm: "pnpm install --prod --frozen-lockfile").
+      Job callers inherit this from the job's pkg-manager; direct command callers must set it
+      to match their project.
   exclude-private:
     type: boolean
     default: true
@@ -24,14 +44,15 @@ parameters:
     type: boolean
     default: false
     description: >
-      When true, only production dependencies are checked and reported.
-      By default both production and development dependencies are validated.
+      When true, only the production dependencies are checked and reported (no -all report).
+      By default both the production and the all-dependencies reports are produced, and the
+      forbidden-license gate runs against the all-dependencies set (a superset of production).
   report-name:
     type: string
     default: license-checker-report
     description: >
       Base name of the license checker report artifacts.
-      Reports are suffixed with "-production" and "-development".
+      Reports are suffixed with "-production" and "-all".
 steps:
   - run:
       name: Configure license-checker options
@@ -41,20 +62,64 @@ steps:
         else
           echo 'export LC_EXCLUDE_PRIVATE=""' >> "$BASH_ENV"
         fi
+  - when:
+      condition:
+        not: << parameters.production-only >>
+      steps:
+        - run:
+            name: Build all-dependencies license report
+            command: npx license-checker $LC_EXCLUDE_PRIVATE --csv > /tmp/<< parameters.report-name >>-all.csv
+            working_directory: << parameters.app-dir >>
+            when: always
+        - run:
+            name: All-dependencies license check
+            command: npx license-checker $LC_EXCLUDE_PRIVATE --summary --failOn "<< parameters.forbidden >>"
+            working_directory: << parameters.app-dir >>
+        - run:
+            name: All-dependencies license summary
+            command: npx license-checker $LC_EXCLUDE_PRIVATE --summary
+            working_directory: << parameters.app-dir >>
+            when: on_fail
   - run:
-      name: Production License Check
-      command: npx license-checker --production --summary $LC_EXCLUDE_PRIVATE --failOn "<< parameters.forbidden >>"
-      working_directory: << parameters.app-dir >>
-  - run:
-      name: Production license summary
-      command: npx license-checker --production --summary $LC_EXCLUDE_PRIVATE
-      working_directory: << parameters.app-dir >>
-      when: on_fail
-  - run:
-      name: Build production license report
-      command: npx license-checker --production $LC_EXCLUDE_PRIVATE --csv > /tmp/<< parameters.report-name >>-production.csv
+      name: Prune node_modules to the production closure
       working_directory: << parameters.app-dir >>
       when: always
+      command: |
+        case "<< parameters.pkg-manager >>" in
+          npm)
+            npm ci --omit=dev
+            ;;
+          yarn)
+            yarn install --production --frozen-lockfile
+            ;;
+          yarn-berry)
+            yarn workspaces focus --all --production
+            ;;
+          pnpm)
+            pnpm install --prod --frozen-lockfile
+            ;;
+          *)
+            echo "Unsupported pkg-manager: << parameters.pkg-manager >>" >&2
+            exit 1
+            ;;
+        esac
+  - run:
+      name: Build production license report
+      command: npx license-checker $LC_EXCLUDE_PRIVATE --csv > /tmp/<< parameters.report-name >>-production.csv
+      working_directory: << parameters.app-dir >>
+      when: always
+  - when:
+      condition: << parameters.production-only >>
+      steps:
+        - run:
+            name: Production license check
+            command: npx license-checker $LC_EXCLUDE_PRIVATE --summary --failOn "<< parameters.forbidden >>"
+            working_directory: << parameters.app-dir >>
+        - run:
+            name: Production license summary
+            command: npx license-checker $LC_EXCLUDE_PRIVATE --summary
+            working_directory: << parameters.app-dir >>
+            when: on_fail
   - store_artifacts:
       path: /tmp/<< parameters.report-name >>-production.csv
       destination: << parameters.app-dir >>/<< parameters.report-name >>-production.csv
@@ -63,21 +128,7 @@ steps:
       condition:
         not: << parameters.production-only >>
       steps:
-        - run:
-            name: Development License Check
-            command: npx license-checker --development --summary $LC_EXCLUDE_PRIVATE --failOn "<< parameters.forbidden >>"
-            working_directory: << parameters.app-dir >>
-        - run:
-            name: Development license summary
-            command: npx license-checker --development --summary $LC_EXCLUDE_PRIVATE
-            working_directory: << parameters.app-dir >>
-            when: on_fail
-        - run:
-            name: Build development license report
-            command: npx license-checker --development $LC_EXCLUDE_PRIVATE --csv > /tmp/<< parameters.report-name >>-development.csv
-            working_directory: << parameters.app-dir >>
-            when: always
         - store_artifacts:
-            path: /tmp/<< parameters.report-name >>-development.csv
-            destination: << parameters.app-dir >>/<< parameters.report-name >>-development.csv
+            path: /tmp/<< parameters.report-name >>-all.csv
+            destination: << parameters.app-dir >>/<< parameters.report-name >>-all.csv
             when: always
