@@ -3,7 +3,7 @@ description: >
   By default both production and development dependencies are checked.
   Copyleft software licenses are considered protective or reciprocal in contrast with permissive free software licenses.
   If one of the Copyleft license is found the build will fail.
-  A CSV report is uploaded as a build artifact for each dependency set (production and development).
+  A CSV report is uploaded as a build artifact for each dependency set (production and all dependencies).
 
 parameters:
   app-dir:
@@ -26,6 +26,7 @@ parameters:
       - npm
       - yarn
       - yarn-berry
+      - pnpm
     default: yarn
     description: The package manager to use to install the node modules
   override-ci-command:
@@ -59,6 +60,7 @@ steps:
       override-ci-command: << parameters.override-ci-command >>
   - validate-copyleft:
       app-dir: << parameters.app-dir >>
+      pkg-manager: << parameters.pkg-manager >>
       production-only: << parameters.production-only >>
       exclude-private: << parameters.exclude-private >>
       report-name: << parameters.report-name >>
