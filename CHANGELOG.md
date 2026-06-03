@@ -4,6 +4,34 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.0]
+
+### Changed
+
+- **BREAKING:** The production report is now built by pruning `node_modules` to the
+  production closure with the project's package manager and then scanning it, instead
+  of using `license-checker --production`. This fixes effectively-empty production
+  reports in Yarn/npm/pnpm **workspaces monorepos**, where production dependencies
+  declared in workspace packages were previously misclassified as development.
+- **BREAKING:** The second CSV artifact is renamed from `<report-name>-development.csv`
+  to `<report-name>-all.csv` and now contains every installed dependency (production +
+  development). Update any tooling that consumes the report by its previous path.
+- The forbidden-license gate (when not `production-only`) now runs against the
+  all-dependencies set.
+
+### Added
+
+- `pnpm` is now a supported `pkg-manager` value (in addition to `npm`, `yarn`, `yarn-berry`).
+- `pkg-manager` parameter on the `validate` and `validate-copyleft` commands, selecting
+  how `node_modules` is pruned to the production closure.
+
+### Notes
+
+- Yarn Berry projects must use `nodeLinker: node-modules` in `.yarnrc.yml` (required for
+  `license-checker` to find `node_modules`).
+- Classic `yarn` v1 uses `yarn install --production`; this is accurate for single-package
+  repos and best-effort for v1 workspaces (the all-dependencies gate remains the safety net).
+
 ## [4.0.0]
 
 ### Changed
